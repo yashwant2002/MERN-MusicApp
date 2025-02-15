@@ -1,6 +1,6 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose"
 
-const song = mongoose.Schema({
+const song = new mongoose.Schema({
     title:{
         type : String,
         required : true
@@ -20,12 +20,14 @@ const song = mongoose.Schema({
         type : String,
         required : true
     },
+    duration : {
+        type : Number,
+        required : true
+    },
     year : {
         type : String,
         required : true
     }
 },{timestamps:true});
 
-const Song = mongoose.model("Song", song);
-
-module.exports = Song
+export const Song = mongoose.model("Song", song);

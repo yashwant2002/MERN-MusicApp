@@ -1,7 +1,7 @@
-const express = require("express")
-const dotenv = require("dotenv")
-const cors = require("cors")
-const cookieParser = require("cookie-parser")
+import express from "express"
+import dotenv from "dotenv"
+import cors from "cors"
+import cookieParser from "cookie-parser"
 
 
 const app = express()
@@ -28,4 +28,4 @@ app.use(cookieParser());
 
 
 
-module.exports = {app}
+export default app;

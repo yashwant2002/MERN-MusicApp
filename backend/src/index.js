@@ -1,6 +1,5 @@
-const {connectDB }= require("./db/index.js")
-const {app }= require("./app.js")
-
+import { connectDB } from "./db/index.js";
+import app from "./app.js"
 
 connectDB()
 .then(()=>{
