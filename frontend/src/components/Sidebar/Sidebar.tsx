@@ -18,7 +18,9 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
-import { useMediaQuery } from "@mui/material";
+import { Dialog, TextField, useMediaQuery } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -106,9 +108,11 @@ export default function MiniDrawer() {
   // console.log(clsx);
 
   const theme = useTheme();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [scrolled, setScrolled] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,9 +133,12 @@ export default function MiniDrawer() {
       <AppBar
         position="fixed"
         sx={{
-          transition: "all 0.3s ease-in-out",
+          transition: "background 0.3s ease-in-out",
           backgroundColor: scrolled ? "#030303" : "transparent",
           boxShadow: scrolled ? "0px 4px 10px rgba(0, 0, 0, 0.5)" : "none",
+          borderBottom: scrolled
+            ? "1px solid rgba(255, 255, 255, 0.2)"
+            : "none",
         }}
       >
         <Toolbar sx={{ display: "flex" }}>
@@ -143,27 +150,81 @@ export default function MiniDrawer() {
           >
             <MenuIcon />
           </IconButton>
-          {!isMobile && (
-            <Typography variant="h6" noWrap>
-              LOGO
-            </Typography>
-          )}
-          <div
-            className={`flex items-center bg-white/10 border border-white/20 text-white px-3 py-1 rounded-lg w-full max-w-sm shadow-lg backdrop-blur-md transition-all duration-300 ${
-              open ? "ml-40" : "ml-10"
-            }`}
+          <Typography
+            sx={{ minWidth: "60px", flexShrink: 0 }}
+            variant="h6"
+            noWrap
           >
-            <SearchIcon className="text-white opacity-70 mr-2 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search songs, albums, artists, podcasts"
-              className="bg-transparent outline-none w-full h-9 text-white placeholder-white/70"
-            />
+            LOGO
+          </Typography>
+
+          <div className="flex items-center w-full lg:justify-between justify-end">
+            {!isMobile ? (
+              <div
+                className={`flex items-center bg-white/10 border border-white/20 text-white px-3 py-1 rounded-lg w-full max-w-sm shadow-lg backdrop-blur-md transition-all duration-300 ${
+                  open ? "ml-40" : "ml-10"
+                }`}
+              >
+                <SearchIcon className="text-white opacity-70 mr-2 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search songs, albums, artists, podcasts"
+                  className="bg-transparent outline-none w-full h-9 text-white placeholder-white/70"
+                />
+              </div>
+            ) : (
+              // Open Search Dialog on Mobile
+              <IconButton color="inherit" onClick={() => setOpenSearch(true)}>
+                <SearchIcon />
+              </IconButton>
+            )}
+            <button className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300">
+              Login
+            </button>
           </div>
-          <button className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300">
-            Login
-          </button>
         </Toolbar>
+        <Dialog
+          open={openSearch}
+          onClose={() => setOpenSearch(false)}
+          fullWidth
+          maxWidth="sm"
+          sx={{
+            top: 0,
+            alignItems: "flex-start",
+          }}
+          PaperProps={{
+            sx: {
+              position: "absolute",
+              top: 15,
+              left: 0,
+              right: 0,
+              margin: "0 auto",
+              borderRadius: 0,
+              backgroundColor: "rgba(15, 15, 15, 0.95)",
+              boxShadow: "none",
+            },
+          }}
+        >
+          <div className="flex items-center px-4 py-3 rounded-lg bg-gray-900">
+            <SearchIcon className="text-white opacity-70 mr-2 w-6 h-6" />
+            <TextField
+              autoFocus
+              fullWidth
+              variant="outlined"
+              placeholder="Search..."
+              InputProps={{ style: { color: "white" } }}
+              sx={{
+                input: {
+                  backgroundColor: "transparent",
+                  borderBottom: "1px solid white",
+                },
+              }}
+            />
+            <IconButton onClick={() => setOpenSearch(false)} color="inherit">
+              <CloseIcon sx={{ color: "white" }} />
+            </IconButton>
+          </div>
+        </Dialog>
       </AppBar>
       <Drawer
         variant="permanent"
@@ -173,6 +234,7 @@ export default function MiniDrawer() {
             backgroundColor: open ? "#030303" : "transparent",
             color: "white",
             transition: "background-color 0.3s ease, width 0.3s ease",
+            borderRight: open ? "1px solid rgba(255, 255, 255, 0.2)" : "none",
           },
         }}
       >
@@ -180,7 +242,11 @@ export default function MiniDrawer() {
         <Divider />
         {/* Home button  */}
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => navigate("/")}
+          >
             <ListItemButton
               sx={[
                 {
@@ -231,7 +297,11 @@ export default function MiniDrawer() {
         </List>
         {/* Explore button  */}
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => navigate("/explore")}
+          >
             <ListItemButton
               sx={[
                 {
@@ -280,9 +350,13 @@ export default function MiniDrawer() {
             </ListItemButton>
           </ListItem>
         </List>
-        {/* Libray button  */}
+        {/* Library button  */}
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => navigate("/library")}
+          >
             <ListItemButton
               sx={[
                 {
@@ -433,9 +507,6 @@ export default function MiniDrawer() {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, height: "100vh" }}>
-        <div className="w-full h-[1200px]"></div>
-      </Box>
     </Box>
   );
 }

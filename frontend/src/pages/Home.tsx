@@ -1,8 +1,11 @@
 import React from 'react'
+import HomeSongCard from '../components/SongCard/HomeSongCard'
 
 const Home = () => {
   return (
-    <div className='font-bold'>Home</div>
+    <div>
+      <HomeSongCard />
+    </div>
   )
 }
 
