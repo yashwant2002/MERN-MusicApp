@@ -1,0 +1,66 @@
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 600px;
+    margin: auto;
+  }
+  
+  .card-container {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .card {
+    position: absolute;
+    width: 80%;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.5s ease-in-out;
+  }
+  
+  .card.active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .card img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .info {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .prev, .next {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .prev { left: -40px; }
+  .next { right: -40px; }
+  
+  .card:hover {
+    transform: scale(1.05);
+    transition: 0.3s ease-in-out;
+  }
+  

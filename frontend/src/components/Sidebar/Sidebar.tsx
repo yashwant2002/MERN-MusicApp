@@ -116,7 +116,7 @@ export default function MiniDrawer() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 70);
+      setScrolled(window.scrollY > 15);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -227,14 +227,14 @@ export default function MiniDrawer() {
         </Dialog>
       </AppBar>
       <Drawer
-        variant="permanent"
+         variant={isMobile ? "temporary" : "permanent"}
         open={open}
         sx={{
           "& .MuiDrawer-paper": {
-            backgroundColor: open ? "#030303" : "transparent",
+            backgroundColor:  scrolled ? "#030303" : open ? "#030303" : "transparent",
             color: "white",
             transition: "background-color 0.3s ease, width 0.3s ease",
-            borderRight: open ? "1px solid rgba(255, 255, 255, 0.2)" : "none",
+            borderRight: scrolled  ? "1px solid rgba(255, 255, 255, 0.2)" :  open ? "1px solid rgba(255, 255, 255, 0.2)" : "none",
           },
         }}
       >

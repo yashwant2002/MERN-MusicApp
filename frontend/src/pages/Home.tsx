@@ -1,10 +1,13 @@
 import React from 'react'
-import HomeSongCard from '../components/SongCard/HomeSongCard'
+import HomeCardRow from '../components/SongCard/HomeCardRow'
 
 const Home = () => {
   return (
     <div>
-      <HomeSongCard />
+      <HomeCardRow />
+      <HomeCardRow />
+      <HomeCardRow />
+      <HomeCardRow />
     </div>
   )
 }
