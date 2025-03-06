@@ -25,6 +25,13 @@ app.use(express.urlencoded({
 
 app.use(cookieParser());
 
+// Router Import
+import authRoute from "./routes/auth.route.js"
+import songRoutes from "./routes/songRoutes.js";
+
+// Router Declaration
+app.use("/auth", authRoute)
+app.use("/api/songs", songRoutes);
 
 
 
