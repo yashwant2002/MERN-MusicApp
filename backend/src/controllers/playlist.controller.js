@@ -1,7 +1,7 @@
-import { Playlist } from "../models/Playlist.js";
-import { Song } from "../models/Song.js";
-import { User } from "../models/User.js";
-t
+import { Playlist } from "../models/playlist.model.js";
+import { Song } from "../models/song.model.js";
+import { User } from "../models/user.model.js";
+
 export const createPlaylist = async (req, res) => {
   try {
     const { name, thumbnail, owner } = req.body;

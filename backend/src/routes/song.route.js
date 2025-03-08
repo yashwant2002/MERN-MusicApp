@@ -8,18 +8,18 @@ import {
   likeSong,
   playSong,
   getSongByArtistAndTitle
-} from "../controllers/songController.js";
+} from "../controllers/song.controller.js";
+import { authenticateUser } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/", createSong);
+router.post("/", authenticateUser, createSong);
 router.get("/", getAllSongs);
 router.get("/:id", getSongById);
-router.put("/:id", updateSong);
-router.delete("/:id", deleteSong);
-router.patch("/:id/like", likeSong);
+router.put("/:id", authenticateUser, updateSong);
+router.delete("/:id", authenticateUser, deleteSong); 
+router.patch("/:id/like", authenticateUser, likeSong); 
 router.patch("/:id/play", playSong);
-router.get("/search", getSongByArtistAndTitle); {/* /api/songs/search?artistName=Drake&songTitle=God's Plan */}
-
+router.get("/search", getSongByArtistAndTitle);
 
 export default router;

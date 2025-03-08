@@ -1,4 +1,4 @@
-import { Song } from "../models/songModel.js";
+import { Song } from "../models/song.model.js";
 
 // Create a new song
 export const createSong = async (req, res) => {
