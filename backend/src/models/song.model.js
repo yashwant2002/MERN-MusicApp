@@ -8,8 +8,8 @@ const songSchema = new mongoose.Schema(
       trim: true
     },
     artist: {
-      type: mongoose.Schema.Types.ObjectId, // Reference an Artist model
-      ref: "Artist",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true
     },
     lyrics: {

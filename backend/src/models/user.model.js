@@ -54,7 +54,7 @@ userSchema.methods.IsPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateToken = function () {
-  const token = jwt.sign({ email: this.email }, process.env.SECRET_KEY, {
+  const token = jwt.sign({userId: this._id, email: this.email }, process.env.SECRET_KEY, {
     expiresIn: process.env.SECRET_KEY_EXPIRE,
   });
   return token;

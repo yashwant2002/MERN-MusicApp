@@ -1,10 +1,17 @@
 import { Song } from "../models/song.model.js";
+import { User } from "../models/user.model.js";
 
-// Create a new song
+// ✅ Create a new song (only for authenticated users)
 export const createSong = async (req, res) => {
   try {
-    const song = new Song(req.body);
+    if (!req.userId) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    const songData = { ...req.body, artist: req.userId };
+    const song = new Song(songData);
     await song.save();
+
     res.status(201).json(song);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -18,50 +25,70 @@ export const getAllSongs = async (req, res) => {
     let filter = {};
 
     if (genre) filter.genre = genre;
-    if (artist) filter.artist = artist;
-    if (search)
-      filter.title = { $regex: search, $options: "i" };
+    if (artist) {
+      const artistData = await User.findOne({ firstName: new RegExp(artist, "i") });
+      if (artistData) {
+        filter.artist = artistData._id;
+      } else {
+        return res.status(404).json({ message: "Artist not found" });
+      }
+    }
+    if (search) filter.title = { $regex: search, $options: "i" };
 
-    const songs = await Song.find(filter).populate("artist");
+    const songs = await Song.find(filter).populate("artist", "firstName lastName");
     res.status(200).json(songs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Get song by ID 
 export const getSongById = async (req, res) => {
   try {
-    const song = await Song.findById(req.params.id).populate("artist");
+    const song = await Song.findById(req.params.id).populate("artist", "firstName lastName");
     if (!song) return res.status(404).json({ message: "Song not found" });
+
     res.status(200).json(song);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+//  Update a song (only owner can update)
 export const updateSong = async (req, res) => {
   try {
-    const updatedSong = await Song.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-    if (!updatedSong) return res.status(404).json({ message: "Song not found" });
+    const song = await Song.findById(req.params.id);
+    if (!song) return res.status(404).json({ message: "Song not found" });
+
+    if (song.artist.toString() !== req.userId) {
+      return res.status(403).json({ message: "You can only update your own songs" });
+    }
+
+    const updatedSong = await Song.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     res.status(200).json(updatedSong);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+//  Delete a song (only owner can delete)
 export const deleteSong = async (req, res) => {
   try {
-    const deletedSong = await Song.findByIdAndDelete(req.params.id);
-    if (!deletedSong) return res.status(404).json({ message: "Song not found" });
+    const song = await Song.findById(req.params.id);
+    if (!song) return res.status(404).json({ message: "Song not found" });
+
+    if (song.artist.toString() !== req.userId) {
+      return res.status(403).json({ message: "You can only delete your own songs" });
+    }
+
+    await song.deleteOne();
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+//  Like a song
 export const likeSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -75,6 +102,7 @@ export const likeSong = async (req, res) => {
   }
 };
 
+//  Play a song (increase play count)
 export const playSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -88,23 +116,38 @@ export const playSong = async (req, res) => {
   }
 };
 
+//  Get song by artist name and title 
+
 export const getSongByArtistAndTitle = async (req, res) => {
   try {
     const { artistName, songTitle } = req.query;
-    
     if (!artistName || !songTitle) {
       return res.status(400).json({ message: "Artist name and song title are required" });
     }
 
-    const song = await Song.findOne({ 
-      title: { $regex: new RegExp(songTitle, "i") }
-    }).populate({
-      path: "artist",
-      match: { name: { $regex: new RegExp(artistName, "i") } }
+    const nameParts = artistName.split(" ");
+    const firstNameQuery = nameParts[0];
+    const lastNameQuery = nameParts[1] || "";
+    const artist = await User.findOne({
+      $or: [
+        { firstName: { $regex: new RegExp(`^${firstNameQuery}`, "i") } },
+        { lastName: { $regex: new RegExp(`^${lastNameQuery}`, "i") } }
+      ]
     });
 
-    if (!song || !song.artist) {
-      return res.status(404).json({ message: "Song not found" });
+    console.log("Artist Found:", artist);
+
+    if (!artist) {
+      return res.status(404).json({ message: "Artist not found" });
+    }
+
+    const song = await Song.findOne({
+      title: { $regex: new RegExp(`^${songTitle}`, "i") },
+      artist: artist._id
+    }).populate("artist");
+
+    if (!song) {
+      return res.status(404).json({ message: "Song not found for this artist" });
     }
 
     res.status(200).json(song);
@@ -112,4 +155,3 @@ export const getSongByArtistAndTitle = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
