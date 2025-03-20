@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { Dialog, TextField, useMediaQuery } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
+import AuthDialog from "../Auth/AuthDialog";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -111,6 +112,7 @@ export default function MiniDrawer() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [scrolled, setScrolled] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -176,7 +178,7 @@ export default function MiniDrawer() {
                 <SearchIcon />
               </IconButton>
             )}
-            <button className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300">
+            <button onClick={() => setDialogOpen(true)} className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300">
               Login
             </button>
           </div>
@@ -505,6 +507,7 @@ export default function MiniDrawer() {
           </ListItem>
         </List>
       </Drawer>
+      <AuthDialog open={dialogOpen} handleClose={() => setDialogOpen(false)} />
     </Box>
   );
 }
