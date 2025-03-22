@@ -32,7 +32,7 @@ import songRoutes from "./routes/song.route.js";
 import playlistRoute from "./routes/playlist.route.js"
 
 // Router Declaration
-app.use("/auth", authRoute)
+app.use("/api/auth", authRoute)
 app.use("/api/user", userRoute)
 app.use("/api/songs", songRoutes);
 app.use("/api/playlist", playlistRoute)

@@ -21,6 +21,8 @@ const Register: React.FC<RegisterProps> = ({ handleClose }) => {
     handleClose();
   };
 
+  
+
   return (
     <>
       <TextField
@@ -113,7 +115,7 @@ const Register: React.FC<RegisterProps> = ({ handleClose }) => {
       />
       <Button onClick={handleSubmit} color="primary" variant="contained" fullWidth sx={{
     mt: 2,
-    background: "rgba(25, 118, 210, 0.8)", // Glassy blue effect
+    background: "rgba(25, 118, 210, 0.8)",
     backdropFilter: "blur(10px)",
     borderRadius: "12px",
     fontWeight: "bold",
