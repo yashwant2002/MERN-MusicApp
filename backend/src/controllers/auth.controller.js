@@ -37,7 +37,9 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required." });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required." });
     }
 
     const user = await User.findOne({ email });
@@ -54,7 +56,15 @@ export const loginUser = async (req, res) => {
       expiresIn: process.env.SECRET_KEY_EXPIRE,
     });
 
-    res.status(200).json({ message: "Login successful!", token, userId: user._id });
+    res
+      .status(200)
+      .json({
+        message: "Login successful!",
+        token,
+        userId: user._id,
+        firstName: user.firstName,
+        email: user.email,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -2,6 +2,7 @@ import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import { Logout, CloudUpload, AccountCircle } from "@mui/icons-material";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,10 +19,20 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
-import { Dialog, TextField, useMediaQuery } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  Menu,
+  MenuItem,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import AuthDialog from "../Auth/AuthDialog";
+import { useAuth } from "../../store/AuthContext";
+import UploadMusicDialog from "../Music/UploadMusicDialog";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -104,12 +115,14 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
-export default function MiniDrawer() {
-
+export default function Sidebar() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { user, logout } = useAuth();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -125,6 +138,14 @@ export default function MiniDrawer() {
 
   const handleDrawerToggle = () => {
     setOpen(!open);
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -178,9 +199,69 @@ export default function MiniDrawer() {
                 <SearchIcon />
               </IconButton>
             )}
-            <button onClick={() => setDialogOpen(true)} className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300">
-              Login
-            </button>
+            {user ? (
+              <>
+                <Button
+                  onClick={handleMenuOpen}
+                  className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300 flex items-center"
+                >
+                  <Avatar
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      bgcolor: "white",
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {user?.firstName
+                      ? user.firstName.charAt(0).toUpperCase()
+                      : "?"}
+                  </Avatar>
+                </Button>
+
+                {/* Dropdown Menu */}
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  sx={{
+                    "& .MuiPaper-root": {
+                      backgroundColor: "#1e1e1e",
+                      color: "#fff",
+                    },
+                  }}
+                >
+                  <MenuItem disabled sx={{ opacity: 0.7 }}>
+                    <ListItemIcon>
+                      <AccountCircle sx={{ color: "gray" }} />
+                    </ListItemIcon>
+                    {user.firstName || "Guest"}
+                  </MenuItem>
+                  <Divider sx={{ backgroundColor: "#444" }} />
+                  <MenuItem onClick={() => setOpen(true)}>
+                    <ListItemIcon>
+                      <CloudUpload sx={{ color: "#fff" }} />
+                    </ListItemIcon>
+                    Upload Music
+                  </MenuItem>
+
+                  <MenuItem onClick={logout} sx={{ color: "#f44336" }}>
+                    <ListItemIcon>
+                      <Logout sx={{ color: "#f44336" }} />
+                    </ListItemIcon>
+                    Sign Out
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <button
+                onClick={() => setDialogOpen(true)}
+                className="px-5 py-2 bg-white/10 border border-white/20 text-white rounded-lg shadow-lg backdrop-blur-md hover:bg-white/20 transition-all duration-300"
+              >
+                Login
+              </button>
+            )}
           </div>
         </Toolbar>
         <Dialog
@@ -227,14 +308,22 @@ export default function MiniDrawer() {
         </Dialog>
       </AppBar>
       <Drawer
-         variant={isMobile ? "temporary" : "permanent"}
+        variant={isMobile ? "temporary" : "permanent"}
         open={open}
         sx={{
           "& .MuiDrawer-paper": {
-            backgroundColor:  scrolled ? "#030303" : open ? "#030303" : "transparent",
+            backgroundColor: scrolled
+              ? "#030303"
+              : open
+              ? "#030303"
+              : "transparent",
             color: "white",
             transition: "background-color 0.3s ease, width 0.3s ease",
-            borderRight: scrolled  ? "1px solid rgba(255, 255, 255, 0.2)" :  open ? "1px solid rgba(255, 255, 255, 0.2)" : "none",
+            borderRight: scrolled
+              ? "1px solid rgba(255, 255, 255, 0.2)"
+              : open
+              ? "1px solid rgba(255, 255, 255, 0.2)"
+              : "none",
           },
         }}
       >
@@ -508,6 +597,7 @@ export default function MiniDrawer() {
         </List>
       </Drawer>
       <AuthDialog open={dialogOpen} handleClose={() => setDialogOpen(false)} />
+      <UploadMusicDialog open={open} onClose={() => setOpen(false)} />
     </Box>
   );
 }

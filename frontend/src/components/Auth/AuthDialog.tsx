@@ -23,15 +23,16 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, handleClose }) => {
   return (
     <Dialog
   open={open}
+  aria-hidden={false}
   onClose={handleClose}
   fullWidth
   maxWidth="xs"
   sx={{
     "& .MuiPaper-root": {
-      backgroundColor: "#fff", // Solid white background
-      borderRadius: "12px", // Rounded corners
+      backgroundColor: "#fff", 
+      borderRadius: "12px", 
       padding: "20px",
-      boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // Elegant shadow
+      boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", 
     },
   }}
 >

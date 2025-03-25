@@ -8,6 +8,7 @@ import Libray from "./pages/Libray";
 function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-black text-white">
