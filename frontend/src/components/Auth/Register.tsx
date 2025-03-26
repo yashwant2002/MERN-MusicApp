@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../store/AuthContext";
 
 interface RegisterProps {
@@ -16,7 +18,6 @@ const Register: React.FC<RegisterProps> = ({ handleClose }) => {
   });
 
   const { register } = useAuth();
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,15 +28,20 @@ const Register: React.FC<RegisterProps> = ({ handleClose }) => {
     e.preventDefault();
 
     if (!registerData.firstName || !registerData.lastName || !registerData.email || !registerData.password) {
-      setError("All fields are required.");
+      toast.warn("⚠️ All fields are required!");
       return;
     }
-    console.log("Registering user with data:", registerData);
+
+    // console.log("Registering user with data:", registerData);
+    
     try {
       await register(registerData.firstName, registerData.lastName, registerData.email, registerData.password);
+      
+      toast.success("🎉 Registration successful!");
+      
       handleClose();
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      toast.error("❌ Registration failed. Please try again.");
     }
   };
 
@@ -94,8 +100,6 @@ const Register: React.FC<RegisterProps> = ({ handleClose }) => {
         }}
         sx={inputStyles}
       />
-
-      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
       <Button
         type="submit"

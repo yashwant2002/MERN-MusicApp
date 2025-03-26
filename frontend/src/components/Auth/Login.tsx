@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../store/AuthContext";
 
 interface LoginProps {
@@ -22,16 +24,18 @@ const Login: React.FC<LoginProps> = ({ handleClose }) => {
     e.preventDefault();
 
     if (!loginData.email || !loginData.password) {
-      setError("Please enter both email and password.");
+      toast.warn("⚠️ Please enter both email and password.");
       return;
     }
 
     try {
       await login(loginData.email, loginData.password);
+      
+      toast.success("🎉 Login successful!");
+      
       handleClose();
     } catch (error) {
-      console.error("Login failed:", error);
-      setError("Invalid email or password. Please try again.");
+      toast.error("❌ Invalid email or password. Please try again.");
     }
   };
 
@@ -93,12 +97,6 @@ const Login: React.FC<LoginProps> = ({ handleClose }) => {
           "& .MuiInputLabel-root": { color: "black" },
         }}
       />
-
-      {error && (
-        <Typography color="error" sx={{ mt: 1, textAlign: "center" }}>
-          {error}
-        </Typography>
-      )}
 
       <Button
         type="submit"

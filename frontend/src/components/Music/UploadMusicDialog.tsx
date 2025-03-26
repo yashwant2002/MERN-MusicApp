@@ -1,66 +1,157 @@
 import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton, TextField } from "@mui/material";
+import axiosInstance from "../../utils/axiosInstance";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
+  TextField,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { CloudUpload, Close } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import { toast } from "react-toastify";
+
+const genres = ["Pop", "Rock", "Hip-Hop", "Classical", "Jazz", "EDM", "R&B", "Other"];
 
 const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const [file, setFile] = useState<File | null>(null);
+  const theme = useTheme(); // Get theme to adapt dark mode
+  const [track, setTrack] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [title, setTitle] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [genre, setGenre] = useState("");
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: "track" | "thumbnail") => {
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]);
+      const file = event.target.files[0];
+      console.log(`Selected ${type} file:`, file.name, "MIME type:", file.type);
+      if (type === "track" && file.type !== "audio/mpeg") {
+        toast.error("Invalid file type! Only MP3 files are allowed.");
+        return;
+      }
+      if (type === "thumbnail" && !["image/jpeg", "image/png"].includes(file.type)) {
+        toast.error("Invalid file type! Only JPG and PNG images are allowed.");
+        return;
+      }
+  
+      if (type === "track") setTrack(file);
+      if (type === "thumbnail") setThumbnail(file);
     }
   };
+  
 
-  const handleUpload = () => {
-    if (!file || !title) {
-      alert("Please select a file and enter a title.");
+  const handleUpload = async () => {
+    if (!track || !thumbnail || !title || !genre || !year) {
+      toast.error("Please fill in all fields and select files.");
       return;
     }
-    
-    console.log("Uploading:", { title, file });
-    
-    // Handle upload logic (API call)
-    
-    onClose(); // Close dialog after upload
+  
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("year", year.toString());
+    formData.append("genre", genre);
+    formData.append("track", track);
+    formData.append("thumbnail", thumbnail);
+  
+    // 🔍 Debugging: Log form data
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+  
+    try {
+      const response = await axiosInstance.post("/api/songs", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Upload success:", response.data);
+      toast.success("Song uploaded successfully!");
+      onClose();
+    } catch (error) {
+      console.error("Upload failed:", error.response?.data || error);
+      toast.error("Upload failed. Please try again.");
+    }
   };
+  
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" PaperProps={{ sx: { backgroundColor: theme.palette.background.default, color: theme.palette.text.primary } }}>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", bgcolor: theme.palette.background.paper }}>
         Upload Music
-        <IconButton onClick={onClose}>
+        <IconButton onClick={onClose} sx={{ color: theme.palette.text.primary }}>
           <Close />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent>
         <TextField
           label="Music Title"
           fullWidth
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, bgcolor: theme.palette.background.paper, input: { color: theme.palette.text.primary } }}
+          InputLabelProps={{ style: { color: theme.palette.text.secondary } }}
         />
-        
+
+        <TextField
+          label="Year"
+          type="number"
+          fullWidth
+          value={year}
+          onChange={(e) => setYear(Number(e.target.value))}
+          sx={{ mb: 2, bgcolor: theme.palette.background.paper, input: { color: theme.palette.text.primary } }}
+          InputLabelProps={{ style: { color: theme.palette.text.secondary } }}
+          inputProps={{ min: 1900, max: new Date().getFullYear() }}
+        />
+
+        <TextField
+          select
+          label="Genre"
+          fullWidth
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          sx={{ mb: 2, bgcolor: theme.palette.background.paper, input: { color: theme.palette.text.primary } }}
+          InputLabelProps={{ style: { color: theme.palette.text.secondary } }}
+        >
+          {genres.map((g) => (
+            <MenuItem key={g} value={g} sx={{ color: theme.palette.text.primary }}>
+              {g}
+            </MenuItem>
+          ))}
+        </TextField>
+
         <Button
           variant="contained"
           component="label"
           fullWidth
           startIcon={<CloudUpload />}
+          sx={{ mb: 2, bgcolor: theme.palette.primary.dark, "&:hover": { bgcolor: theme.palette.primary.main } }}
         >
-          Select File
-          <input type="file" accept="audio/*" hidden onChange={handleFileChange} />
+          Select Track File
+          <input type="file" accept="audio/*" hidden onChange={(e) => handleFileChange(e, "track")} />
         </Button>
-        
-        {file && <p style={{ marginTop: "10px" }}>Selected: {file.name}</p>}
+        {track && <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Selected Track: {track.name}</Typography>}
+
+        <Button
+          variant="contained"
+          component="label"
+          fullWidth
+          startIcon={<CloudUpload />}
+          sx={{ mb: 2, bgcolor: theme.palette.primary.dark, "&:hover": { bgcolor: theme.palette.primary.main } }}
+        >
+          Select Thumbnail
+          <input type="file" accept="image/*" hidden onChange={(e) => handleFileChange(e, "thumbnail")} />
+        </Button>
+        {thumbnail && <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Selected Thumbnail: {thumbnail.name}</Typography>}
       </DialogContent>
-      
-      <DialogActions>
+
+      <DialogActions sx={{ bgcolor: theme.palette.background.paper }}>
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button onClick={handleUpload} color="primary" variant="contained" disabled={!file || !title}>
+        <Button onClick={handleUpload} color="primary" variant="contained" disabled={!track || !thumbnail || !title || !genre}>
           Upload
         </Button>
       </DialogActions>

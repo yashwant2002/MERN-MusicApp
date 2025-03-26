@@ -23,6 +23,8 @@ app.use(express.urlencoded({
     limit: "16kb"
 }));
 
+app.use("/uploads", express.static("/backend/public/uploads"));
+
 app.use(cookieParser());
 
 // Router Import
@@ -36,7 +38,6 @@ app.use("/api/auth", authRoute)
 app.use("/api/user", userRoute)
 app.use("/api/songs", songRoutes);
 app.use("/api/playlist", playlistRoute)
-
 
 
 export default app;

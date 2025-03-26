@@ -1,14 +1,47 @@
 import { Song } from "../models/song.model.js";
 import { User } from "../models/user.model.js";
+import cloudinary from "../utils/cloudinary.js";
+import fs from "fs";
 
-// ✅ Create a new song (only for authenticated users)
+
+//  Create a new song (with file upload)
 export const createSong = async (req, res) => {
   try {
-    if (!req.userId) {
-      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    if (!req.files || !req.files.track || !req.files.thumbnail) {
+      return res.status(400).json({ message: "Track and thumbnail are required." });
     }
 
-    const songData = { ...req.body, artist: req.userId };
+    const trackPath = req.files.track[0].path;
+    const thumbnailPath = req.files.thumbnail[0].path;
+
+    // Upload track to Cloudinary
+    const trackUpload = await cloudinary.uploader.upload(trackPath, {
+      resource_type: "video", // Allows audio duration metadata
+      folder: "tracks"
+    });
+
+    // Upload thumbnail to Cloudinary
+    const thumbnailUpload = await cloudinary.uploader.upload(thumbnailPath, {
+      folder: "thumbnails"
+    });
+
+    // Ensure duration exists
+    if (!trackUpload.duration) {
+      return res.status(400).json({ message: "Failed to get track duration from Cloudinary." });
+    }
+
+    // Cleanup temporary files
+    fs.unlinkSync(trackPath);
+    fs.unlinkSync(thumbnailPath);
+
+    const songData = {
+      ...req.body,
+      artist: req.userId,
+      track: trackUpload.secure_url,
+      thumbnail: thumbnailUpload.secure_url,
+      duration: trackUpload.duration // Cloudinary returns duration in seconds
+    };
+
     const song = new Song(songData);
     await song.save();
 
@@ -18,31 +51,18 @@ export const createSong = async (req, res) => {
   }
 };
 
-//  Get all songs 
+
+//  Get all songs
 export const getAllSongs = async (req, res) => {
   try {
-    const { genre, artist, search } = req.query;
-    let filter = {};
-
-    if (genre) filter.genre = genre;
-    if (artist) {
-      const artistData = await User.findOne({ firstName: new RegExp(artist, "i") });
-      if (artistData) {
-        filter.artist = artistData._id;
-      } else {
-        return res.status(404).json({ message: "Artist not found" });
-      }
-    }
-    if (search) filter.title = { $regex: search, $options: "i" };
-
-    const songs = await Song.find(filter).populate("artist", "firstName lastName");
+    const songs = await Song.find().populate("artist", "firstName lastName");
     res.status(200).json(songs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get song by ID 
+//  Get song by ID
 export const getSongById = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id).populate("artist", "firstName lastName");
@@ -54,7 +74,7 @@ export const getSongById = async (req, res) => {
   }
 };
 
-//  Update a song (only owner can update)
+// 🎵 Update a song (Only owner can update)
 export const updateSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -71,7 +91,7 @@ export const updateSong = async (req, res) => {
   }
 };
 
-//  Delete a song (only owner can delete)
+// 🎵 Delete a song (Only owner can delete)
 export const deleteSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -102,7 +122,7 @@ export const likeSong = async (req, res) => {
   }
 };
 
-//  Play a song (increase play count)
+//  Play a song (Increase play count)
 export const playSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
@@ -116,8 +136,7 @@ export const playSong = async (req, res) => {
   }
 };
 
-//  Get song by artist name and title 
-
+//  Get song by artist name and title
 export const getSongByArtistAndTitle = async (req, res) => {
   try {
     const { artistName, songTitle } = req.query;
@@ -128,14 +147,13 @@ export const getSongByArtistAndTitle = async (req, res) => {
     const nameParts = artistName.split(" ");
     const firstNameQuery = nameParts[0];
     const lastNameQuery = nameParts[1] || "";
+
     const artist = await User.findOne({
       $or: [
         { firstName: { $regex: new RegExp(`^${firstNameQuery}`, "i") } },
         { lastName: { $regex: new RegExp(`^${lastNameQuery}`, "i") } }
       ]
     });
-
-    console.log("Artist Found:", artist);
 
     if (!artist) {
       return res.status(404).json({ message: "Artist not found" });
