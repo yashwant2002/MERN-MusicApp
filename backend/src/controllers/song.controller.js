@@ -62,6 +62,27 @@ export const getAllSongs = async (req, res) => {
   }
 };
 
+//  Get my own song
+export const getMyOwnSongs = async (req, res) => {
+  try {
+    console.log("getMyOwnSongs - req.userId:", req.userId);
+    if (!req.userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const songs = await Song.find({ artist: req.userId }).populate("artist", "firstName lastName");
+
+    if (!songs.length) {
+      return res.status(404).json({ message: "No songs found for this user" });
+    }
+
+    res.status(200).json(songs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 //  Get song by ID
 export const getSongById = async (req, res) => {
   try {

@@ -5,8 +5,13 @@ import "react-alice-carousel/lib/alice-carousel.css";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-const HomeCardRow = () => {
-  const carouselRef = useRef(null);
+interface HomeCardRowProps {
+  title: string;
+  songs: { title: string; artist: string; thumbnail: string; track: string }[];
+}
+
+const HomeCardRow: React.FC<HomeCardRowProps> = ({ title, songs }) => {
+  const carouselRef = useRef<AliceCarousel | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const responsive = {
@@ -15,33 +20,28 @@ const HomeCardRow = () => {
     1024: { items: 6 },
   };
 
-  const totalItems = 11;
-  const items = Array(totalItems).fill(null).map((_, index) => <HomeSongCard key={index} />);
+  const items = songs.map((song, index) => <HomeSongCard key={index} song={song} />);
 
   // Manual navigation handlers
   const slidePrev = () => {
-    if (activeIndex > 0) {
-      carouselRef.current?.slidePrev();
-    }
+    carouselRef.current?.slidePrev();
   };
 
   const slideNext = () => {
-    if (activeIndex < totalItems - 1) {
-      carouselRef.current?.slideNext();
-    }
+    carouselRef.current?.slideNext();
   };
 
   // Update active index on slide change
-  const handleSlideChange = (e) => {
+  const handleSlideChange = (e: { item: number }) => {
     setActiveIndex(e.item);
   };
 
   return (
     <div className="w-full overflow-hidden relative">
       {/* Header Section */}
-      <div className="flex justify-between items-center py-5  lg:pr-10 flex-nowrap">
-        <h2 className="text-2xl font-extrabold text-white">New Release</h2>
-        <div className="flex space-x-2 flex-shrink-0 min-w-[90px]">
+      <div className="flex justify-between items-center py-5 lg:pr-10">
+        <h2 className="text-2xl font-extrabold text-white">{title}</h2>
+        <div className="flex space-x-2">
           <button
             onClick={slidePrev}
             disabled={activeIndex === 0}
@@ -53,9 +53,9 @@ const HomeCardRow = () => {
           </button>
           <button
             onClick={slideNext}
-            disabled={activeIndex >= totalItems - 1}
+            disabled={activeIndex >= songs.length - 1}
             className={`rounded-full border border-white p-2 transition ${
-              activeIndex >= totalItems - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
+              activeIndex >= songs.length - 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
             }`}
           >
             <ChevronRightIcon />

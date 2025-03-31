@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import {
   Dialog,
@@ -18,64 +18,84 @@ import { toast } from "react-toastify";
 
 const genres = ["Pop", "Rock", "Hip-Hop", "Classical", "Jazz", "EDM", "R&B", "Other"];
 
-const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const theme = useTheme(); 
-  const [track, setTrack] = useState<File | null>(null);
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
+interface Song {
+  _id: string;
+  title: string;
+  year: number;
+  genre: string;
+  thumbnail: string;
+}
+
+interface UpdateDialogProps {
+  open: boolean;
+  onClose: () => void;
+  song?: Song; // Make `song` optional to prevent undefined errors
+  onUpdateSuccess: () => void;
+}
+
+const UpdateDialog: React.FC<UpdateDialogProps> = ({ open, onClose, song, onUpdateSuccess }) => {
+  const theme = useTheme();
   const [title, setTitle] = useState("");
   const [year, setYear] = useState(new Date().getFullYear());
   const [genre, setGenre] = useState("");
-  const [loading, setLoading] = useState(false); // New loading state
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: "track" | "thumbnail") => {
+  // Set song details when `song` is available
+  useEffect(() => {
+    if (song) {
+      setTitle(song.title);
+      setYear(song.year);
+      setGenre(song.genre);
+    }
+  }, [song]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      if (type === "track" && file.type !== "audio/mpeg") {
-        toast.error("Invalid file type! Only MP3 files are allowed.");
-        return;
-      }
-      if (type === "thumbnail" && !["image/jpeg", "image/png"].includes(file.type)) {
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
         toast.error("Invalid file type! Only JPG and PNG images are allowed.");
         return;
       }
-  
-      if (type === "track") setTrack(file);
-      if (type === "thumbnail") setThumbnail(file);
+      setThumbnail(file);
     }
   };
 
-  const handleUpload = async () => {
-    if (!track || !thumbnail || !title || !genre || !year) {
-      toast.error("Please fill in all fields and select files.");
+  const handleUpdate = async () => {
+    if (!title || !genre || !year) {
+      toast.error("Please fill in all fields.");
       return;
     }
-  
-    setLoading(true); // Start loading
-  
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("year", year.toString());
-    formData.append("genre", genre);
-    formData.append("track", track);
-    formData.append("thumbnail", thumbnail);
-  
+
+    setLoading(true);
+
     try {
-      const response = await axiosInstance.post("/api/songs", formData, {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("year", year.toString());
+      formData.append("genre", genre);
+      if (thumbnail) formData.append("thumbnail", thumbnail);
+
+      await axiosInstance.put(`/api/songs/${song?._id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Song uploaded successfully!");
+
+      toast.success("Song updated successfully!");
+      onUpdateSuccess();
       onClose();
     } catch (error) {
-      toast.error("Upload failed. Please try again.");
+      toast.error("Update failed. Please try again.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
+
+  if (!song) return null; // Prevent rendering if `song` is undefined
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" PaperProps={{ sx: { backgroundColor: theme.palette.background.default, color: theme.palette.text.primary } }}>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", bgcolor: theme.palette.background.paper }}>
-        Upload Music
+        Update Song
         <IconButton onClick={onClose} sx={{ color: theme.palette.text.primary }} disabled={loading}>
           <Close />
         </IconButton>
@@ -129,21 +149,8 @@ const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
           sx={{ mb: 2, bgcolor: theme.palette.primary.dark, "&:hover": { bgcolor: theme.palette.primary.main } }}
           disabled={loading}
         >
-          Select Track File
-          <input type="file" accept="audio/*" hidden onChange={(e) => handleFileChange(e, "track")} />
-        </Button>
-        {track && <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Selected Track: {track.name}</Typography>}
-
-        <Button
-          variant="contained"
-          component="label"
-          fullWidth
-          startIcon={<CloudUpload />}
-          sx={{ mb: 2, bgcolor: theme.palette.primary.dark, "&:hover": { bgcolor: theme.palette.primary.main } }}
-          disabled={loading}
-        >
-          Select Thumbnail
-          <input type="file" accept="image/*" hidden onChange={(e) => handleFileChange(e, "thumbnail")} />
+          Change Thumbnail
+          <input type="file" accept="image/*" hidden onChange={handleFileChange} />
         </Button>
         {thumbnail && <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Selected Thumbnail: {thumbnail.name}</Typography>}
       </DialogContent>
@@ -152,12 +159,12 @@ const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
         <Button onClick={onClose} color="secondary" disabled={loading}>
           Cancel
         </Button>
-        <Button onClick={handleUpload} color="primary" variant="contained" disabled={loading || !track || !thumbnail || !title || !genre}>
-          {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Upload"}
+        <Button onClick={handleUpdate} color="primary" variant="contained" disabled={loading || !title || !genre || !year}>
+          {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Update"}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default UploadMusicDialog;
+export default UpdateDialog;

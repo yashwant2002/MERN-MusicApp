@@ -33,6 +33,8 @@ import { useNavigate } from "react-router-dom";
 import AuthDialog from "../Auth/AuthDialog";
 import { useAuth } from "../../store/AuthContext";
 import UploadMusicDialog from "../Music/UploadMusicDialog";
+import { IoAdd } from "react-icons/io5";
+import Logo from "../../utils/Logo";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -123,6 +125,7 @@ export default function Sidebar() {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
+  const [openFrom, setOpenFrom] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -136,10 +139,27 @@ export default function Sidebar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      if (!isMobile && open) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobile, open]);
 
+  const handleDrawerToggle = () => {
+    if (isMobile) {
+      setOpen((prev) => !prev);
+    } else {
+      setOpen((prev) => !prev);
+    }
+  };
+  
+  const handleUploadOpen = () => {
+    setOpenFrom(true); // Upload form ko open kare
+  };
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -176,7 +196,7 @@ export default function Sidebar() {
             variant="h6"
             noWrap
           >
-            LOGO
+            <Logo />
           </Typography>
 
           <div className="flex items-center w-full lg:justify-between justify-end">
@@ -239,7 +259,7 @@ export default function Sidebar() {
                     {user.firstName || "Guest"}
                   </MenuItem>
                   <Divider sx={{ backgroundColor: "#444" }} />
-                  <MenuItem onClick={() => setOpen(true)}>
+                  <MenuItem onClick={handleUploadOpen}>
                     <ListItemIcon>
                       <CloudUpload sx={{ color: "#fff" }} />
                     </ListItemIcon>
@@ -310,6 +330,16 @@ export default function Sidebar() {
       <Drawer
         variant={isMobile ? "temporary" : "permanent"}
         open={open}
+        onClose={() => setOpen(false)}
+        ModalProps={{
+          keepMounted: true, // Better mobile performance
+          BackdropProps: {
+            sx: {
+              backgroundColor: 'rgba(0,0,0,0.7)', // Darker backdrop
+              backdropFilter: 'blur(4px)'
+            }
+          }
+        }}
         sx={{
           "& .MuiDrawer-paper": {
             backgroundColor: scrolled
@@ -324,6 +354,13 @@ export default function Sidebar() {
               : open
               ? "1px solid rgba(255, 255, 255, 0.2)"
               : "none",
+              ...(isMobile && {
+                width: '100%',
+        '& .MuiPaper-root': {
+          width: '75%',
+          maxWidth: '300px'
+        }
+              })
           },
         }}
       >
@@ -489,46 +526,52 @@ export default function Sidebar() {
                       },
                 ]}
               >
-                Library
+                My Music
               </ListItemText>
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider />
+        <Divider sx={[{bgcolor:"gray", width:"80%", marginLeft:"25px", marginTop:'20px', marginBottom:"20px"},open ? { width:"80%"}: {width:"0"}]} />
         {/* New playlist */}
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={[
-                {
-                  minHeight: 48,
-                  px: 2.5,
-                },
-                open
-                  ? {
-                      justifyContent: "initial",
-                    }
-                  : {
-                      justifyContent: "center",
-                    },
-              ]}
-            >
-              <ListItemText
-                sx={[
-                  open
-                    ? {
-                        opacity: 1,
-                      }
-                    : {
-                        opacity: 0,
-                      },
-                ]}
-              >
-                New Playlist
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
+      <ListItem disablePadding sx={{ display: open ? "block" : "none" }}>
+        <ListItemButton
+          sx={{
+            minHeight: 48,
+            backdropFilter: "blur(10px)",
+            borderRadius: "50px",
+            transition: "all 0.3s ease-in-out",
+            display: "flex",
+            alignItems: "center",
+            marginX: open ? "10px" : "0px", 
+            paddingX: open ? 2.5 : 1, 
+            justifyContent: open ? "flex-start" : "center",
+            backgroundColor: open ? "rgba(255, 255, 255, 0.1)" : "transparent",
+            "&:hover": open
+              ? {
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  transform: "scale(1.05)",
+                }
+              : {}, 
+          }}
+        >
+          <IoAdd size={22} color="white" />
+
+          {/* Render text only when open is true */}
+          {open && (
+            <ListItemText
+              primary="New Playlist"
+              sx={{
+                marginLeft: 1,
+                fontWeight: "bold",
+                letterSpacing: "0.5px",
+                color: "white",
+              }}
+            />
+          )}
+        </ListItemButton>
+      </ListItem>
+    </List>
         <List>
           <ListItem disablePadding sx={{ display: "block" }}>
             <ListItemButton
@@ -597,7 +640,7 @@ export default function Sidebar() {
         </List>
       </Drawer>
       <AuthDialog open={dialogOpen} handleClose={() => setDialogOpen(false)} />
-      <UploadMusicDialog open={open} onClose={() => setOpen(false)} />
+      <UploadMusicDialog open={openFrom} onClose={() => setOpenFrom(false)} />
     </Box>
   );
 }

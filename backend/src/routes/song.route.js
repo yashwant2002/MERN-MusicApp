@@ -8,6 +8,7 @@ import {
   likeSong,
   playSong,
   getSongByArtistAndTitle,
+  getMyOwnSongs,
 } from "../controllers/song.controller.js";
 import {upload} from "../middleware/multer.middleware.js"
 import { authenticateUser } from "../middleware/auth.middleware.js";
@@ -24,8 +25,9 @@ router.post(
   ]),
   createSong
 );
-router.get("/", getAllSongs);
+router.get("/my-songs", authenticateUser, getMyOwnSongs);
 router.get("/:id", getSongById);
+router.get("/", getAllSongs);
 router.put("/:id", authenticateUser, updateSong);
 router.delete("/:id", authenticateUser, deleteSong);
 router.post("/:id/like", authenticateUser, likeSong);

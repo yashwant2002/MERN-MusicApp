@@ -11,6 +11,7 @@ import {
 import { IoMdClose } from "react-icons/io";
 import Login from "./Login";
 import Register from "./Register";
+import Logo from "../../utils/Logo";
 
 interface AuthDialogProps {
   open: boolean;
@@ -44,7 +45,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, handleClose }) => {
       color: "#333", // Darker color for better readability
     }}
   >
-    LOGO
+    <Logo/>
   </DialogTitle>
 
   {/* Tabs for switching between Login & Register */}
