@@ -18,6 +18,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExploreIcon from "@mui/icons-material/Explore";
 import LibraryMusicIcon from "@mui/icons-material/LibraryMusic";
 import SearchIcon from "@mui/icons-material/Search";
+import PushPinIcon from '@mui/icons-material/PushPin';
 import { useEffect, useState } from "react";
 import {
   Avatar,
@@ -35,6 +36,9 @@ import { useAuth } from "../../store/AuthContext";
 import UploadMusicDialog from "../Music/UploadMusicDialog";
 import { IoAdd } from "react-icons/io5";
 import Logo from "../../utils/Logo";
+import CreatePlaylist from "../Playlist/CreatePlaylist";
+import axiosInstance from "../../utils/axiosInstance";
+import { usePlaylist } from "../../store/PlaylistContext";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -122,10 +126,12 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { user, logout } = useAuth();
+  const {playlists, fetchPlaylists} =usePlaylist();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [openFrom, setOpenFrom] = useState(false);
+  const [openPlaylistForm, setOpenPlaylistForm] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -149,6 +155,10 @@ export default function Sidebar() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobile, open]);
 
+  useEffect(()=>{
+    fetchPlaylists();
+  },[])
+
   const handleDrawerToggle = () => {
     if (isMobile) {
       setOpen((prev) => !prev);
@@ -156,6 +166,8 @@ export default function Sidebar() {
       setOpen((prev) => !prev);
     }
   };
+
+  // console.log(playlists)
   
   const handleUploadOpen = () => {
     setOpenFrom(true); // Upload form ko open kare
@@ -256,7 +268,7 @@ export default function Sidebar() {
                     <ListItemIcon>
                       <AccountCircle sx={{ color: "gray" }} />
                     </ListItemIcon>
-                    {user.firstName || "Guest"}
+                    {user.firstName|| "Guest"}
                   </MenuItem>
                   <Divider sx={{ backgroundColor: "#444" }} />
                   <MenuItem onClick={handleUploadOpen}>
@@ -481,7 +493,7 @@ export default function Sidebar() {
           <ListItem
             disablePadding
             sx={{ display: "block" }}
-            onClick={() => navigate("/library")}
+            onClick={() => user? navigate("/library"): setDialogOpen(true)}
           >
             <ListItemButton
               sx={[
@@ -536,6 +548,7 @@ export default function Sidebar() {
         <List>
       <ListItem disablePadding sx={{ display: open ? "block" : "none" }}>
         <ListItemButton
+          onClick={()=>user? setOpenPlaylistForm(true): setDialogOpen(true)} 
           sx={{
             minHeight: 48,
             backdropFilter: "blur(10px)",
@@ -556,8 +569,6 @@ export default function Sidebar() {
           }}
         >
           <IoAdd size={22} color="white" />
-
-          {/* Render text only when open is true */}
           {open && (
             <ListItemText
               primary="New Playlist"
@@ -600,14 +611,20 @@ export default function Sidebar() {
                       },
                 ]}
               >
-                Liked Songs
+                <div className="grid gap-1">
+                  <h1>Liked Songs</h1>                      
+                      <p className="text-gray-300 flex items-center text-[13px]"><PushPinIcon sx={{ color: "gray", fontSize:"20px" }} />Default Playlist</p>
+                </div>
               </ListItemText>
             </ListItemButton>
           </ListItem>
         </List>
-        <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
+        <List sx={{ height:"280px", overflowX: open ? "auto": ""}}>
+        {
+          playlists.map((playlist)=>(
+            <ListItem key={playlist._id} disablePadding sx={{ display: "block" }}>
+            <ListItemButton 
+              onClick={() => navigate(`/playlist/${playlist._id}`)}
               sx={[
                 {
                   minHeight: 48,
@@ -633,14 +650,21 @@ export default function Sidebar() {
                       },
                 ]}
               >
-                Songs
+                <div className="grid gap-1">
+                  <h1>{playlist.name}</h1>
+                      
+                      <p className="text-gray-300 flex items-center text-[13px]"><AccountCircle sx={{ color: "gray", fontSize:"20px" }} />{playlist.owner.firstName + " " + playlist.owner.lastName}</p>
+                </div>
               </ListItemText>
             </ListItemButton>
           </ListItem>
+          ))
+        }
         </List>
       </Drawer>
       <AuthDialog open={dialogOpen} handleClose={() => setDialogOpen(false)} />
       <UploadMusicDialog open={openFrom} onClose={() => setOpenFrom(false)} />
+      <CreatePlaylist open={openPlaylistForm} handleClose={()=>setOpenPlaylistForm(false)} />
     </Box>
   );
 }

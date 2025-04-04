@@ -65,7 +65,7 @@ export const getAllSongs = async (req, res) => {
 //  Get my own song
 export const getMyOwnSongs = async (req, res) => {
   try {
-    console.log("getMyOwnSongs - req.userId:", req.userId);
+    // console.log("getMyOwnSongs - req.userId:", req.userId);
     if (!req.userId) {
       return res.status(401).json({ message: "User not authenticated" });
     }
@@ -95,7 +95,7 @@ export const getSongById = async (req, res) => {
   }
 };
 
-// 🎵 Update a song (Only owner can update)
+//  Update a song (Only owner can update)
 export const updateSong = async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);

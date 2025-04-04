@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
@@ -10,10 +10,13 @@ import ErrorBoundary from "./utils/ErroBoundry";
 import { useSongs } from "./store/SongContext";
 import Login from "./components/Auth/Login";
 import AuthDialog from "./components/Auth/AuthDialog";
+import Playlist from "./components/Playlist/Playlist";
 
 function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const location = useLocation();
+const isPlaylistRoute = location.pathname === "/playlist";
 
   interface Song {
     title: string;
@@ -24,24 +27,6 @@ function App() {
   }
 
   const {songs} = useSongs()
-// const songs : Song = [
-//   {
-//     title: "Superstar",
-//     artist: "Freddie Dredd",
-//     thumbnail:
-//       "https://res.cloudinary.com/dxgq4qa2t/image/upload/v1742948256/thumbnails/e5dqf7ha4lshog5cmell.jpg",
-//     track:
-//       "https://res.cloudinary.com/dxgq4qa2t/video/upload/v1742948254/tracks/kxaopiz6bs4xxsk5wcsk.mp3",
-//     likes: "100",
-//   },
-//   { 
-//     title: "Next Song",
-//     artist: "Artist 2",
-//     thumbnail: "/cover2.jpg",
-//     track: "/audio/nextsong.mp3",
-//     likes: 0,
-//   },
-// ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-black text-white">
@@ -51,23 +36,19 @@ function App() {
           component="main"
           sx={{
             flexGrow: 1,
-            minHeight: "100vh",
-            minWidth : "0",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            // justifyContent: "center",
-            padding : isMobile ?"1rem": ".8rem",
-            marginTop: isMobile ? "4rem" : "4rem",
-            marginLeft: isMobile ? ".1rem" : "2rem",
-            marginRight: isMobile ? ".1rem" : "2rem", 
+            minWidth: 0,
+            padding:isPlaylistRoute? "0" : isMobile ? "1rem" : ".8rem",
+            marginTop:isPlaylistRoute? "0" : isMobile ? "4rem" : "4rem",
+            marginLeft:isPlaylistRoute? "0" : isMobile ? ".1rem" : "2rem",
+            marginRight:isPlaylistRoute? "0" : isMobile ? ".1rem" : "2rem",
+            overflowY: "auto",
           }}
         >
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* <Route path="/login" element={<AuthDialog />} /> */}
             <Route path="/explore" element={<Explore />} />
             <Route path="/library" element={<MyMusic />} />
+            <Route path="/playlist/:id" element={<Playlist/>} />
           </Routes>
         </Box>
       </Box>

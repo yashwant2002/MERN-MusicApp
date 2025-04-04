@@ -7,13 +7,13 @@ const playlist = new mongoose.Schema({
     },
     thumbnail : {
         type : String,
-        required : true
+        default:  "https://yt3.googleusercontent.com/wotexgHbeJJzumPdT8hUvTKElOEC24FPKO0sUMuQShht4B85voTd0o7KnR9o83FGXWwraCpbCZxq=s1200",
     },
     owner : {
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
     },
-    song : [{
+    songs : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : "Song"
     }],

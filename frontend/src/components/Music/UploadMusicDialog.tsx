@@ -68,7 +68,7 @@ const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
     } catch (error) {
       toast.error("Upload failed. Please try again.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 

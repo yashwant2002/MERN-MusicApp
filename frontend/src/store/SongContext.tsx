@@ -38,7 +38,6 @@ export const SongProvider = ({ children }: { children: ReactNode }) => {
       setSongs(response.data);
       setError(null);
 
-      // Update currentSong if it's no longer in the list
       if (currentSong && !response.data.some(song => song._id === currentSong._id)) {
         setCurrentSong(response.data.length > 0 ? response.data[0] : null);
       } else if (!currentSong && response.data.length > 0) {
