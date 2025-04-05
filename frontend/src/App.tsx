@@ -11,12 +11,14 @@ import { useSongs } from "./store/SongContext";
 import Login from "./components/Auth/Login";
 import AuthDialog from "./components/Auth/AuthDialog";
 import Playlist from "./components/Playlist/Playlist";
+import Artist from "./components/Artist/Artist";
 
 function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 const isPlaylistRoute = location.pathname === "/playlist";
+// const isArtistRoute = location.pathname === "/artist"
 
   interface Song {
     title: string;
@@ -49,6 +51,7 @@ const isPlaylistRoute = location.pathname === "/playlist";
             <Route path="/explore" element={<Explore />} />
             <Route path="/library" element={<MyMusic />} />
             <Route path="/playlist/:id" element={<Playlist/>} />
+            <Route path="/artist/:artistId" element={<Artist/>}/>
           </Routes>
         </Box>
       </Box>

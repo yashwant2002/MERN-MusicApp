@@ -42,10 +42,12 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, handleClose }) => {
       textAlign: "center",
       fontWeight: "bold",
       fontSize: "20px",
-      color: "#333", // Darker color for better readability
+      color: "#333",
     }}
   >
-    <Logo/>
+    <div className="flex justify-center">
+      <img className="h-12 w-24" src="/AuthBlackLogo.png" />
+    </div>
   </DialogTitle>
 
   {/* Tabs for switching between Login & Register */}

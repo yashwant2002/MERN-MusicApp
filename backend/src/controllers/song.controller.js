@@ -62,6 +62,25 @@ export const getAllSongs = async (req, res) => {
   }
 };
 
+export const getSongByName = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    const regex = new RegExp(name, "i"); // case-insensitive search
+    const songs = await Song.find({ title: regex }).populate("artist");
+
+    if (!songs.length) {
+      return res.status(404).json({ message: "No songs found" });
+    }
+
+    res.status(200).json(songs);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 //  Get my own song
 export const getMyOwnSongs = async (req, res) => {
   try {

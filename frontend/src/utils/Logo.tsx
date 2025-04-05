@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Logo = () => {
+  const navigate = useNavigate();
   return (
-    <div>LOGO</div>
-  )
-}
+    <div className="cursor-pointer" onClick={() => navigate("/")}>
+      <img className="h-10 w-20" src="/logo.png" />
+    </div>
+  );
+};
 
-export default Logo
+export default Logo;

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 import { Menu, MenuItem, Dialog, DialogTitle, List, ListItem, ListItemButton } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface SongProps {
   song: {
@@ -23,7 +24,7 @@ interface SongProps {
 const HomeSongCard: React.FC<SongProps> = ({ song }) => {
   const { playSong } = useSongs();
   const { playlists, addSongToPlaylist } = usePlaylist();
-  
+  const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -48,7 +49,7 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
   };
 
   // Add song to selected playlist
-  const handleAddToPlaylist = async (playlistId: string, e : React.MouseEvent) => {
+  const handleAddToPlaylist = async (playlistId: string) => {
     await addSongToPlaylist(playlistId, song._id);
     setDialogOpen(false);
   };
@@ -73,7 +74,7 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
         <div>
           <a className="font-bold block truncate">{song.title}</a>
           <p className="text-sm truncate">
-            Artist: <span className="text-gray-300 hover:underline cursor-pointer">{song.artist.firstName + " " + song.artist.lastName}</span>
+            Artist: <span onClick={()=> navigate(`/artist/${song.artist._id}`)} className="text-gray-300 hover:underline cursor-pointer">{song.artist.firstName + " " + song.artist.lastName}</span>
           </p>
         </div>
 
