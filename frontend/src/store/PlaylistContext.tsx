@@ -34,7 +34,7 @@ export const PlaylistProvider: React.FC<{ children: ReactNode }> = ({ children }
   const fetchPlaylists = async () => {
     setLoading(true);
     try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token"); 
       const response = await axiosInstance.get("/api/playlist/my-playlists",{
         headers: { Authorization: `Bearer ${token}` }
       });

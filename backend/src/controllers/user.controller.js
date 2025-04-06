@@ -68,6 +68,28 @@ export const unlikeSong = async (req, res) => {
   }
 };
 
+export const 
+getLikedSongs = async (req, res) => {
+  try {
+    // console.log("Fetching liked songs for user:", req.userId);
+    const user = await User.findById(req.userId).populate({
+      path: 'likedSongs',
+      populate: {
+        path: 'artist',
+        select: 'firstName lastName'
+      }
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found." });
+    // console.log("Liked songs:", user.likedSongs);
+
+
+    res.status(200).json(user.likedSongs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const subscribeArtist = async (req, res) => {
   try {
     const { artistId } = req.body;
@@ -85,6 +107,7 @@ export const subscribeArtist = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const unsubscribeArtist = async (req, res) => {
   try {

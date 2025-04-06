@@ -124,7 +124,6 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
-  // Helper functions
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);

@@ -1,11 +1,21 @@
 import { PlayArrow } from "@mui/icons-material";
 import { useSongs } from "../../store/SongContext";
 import { usePlaylist } from "../../store/PlaylistContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
-import { Menu, MenuItem, Dialog, DialogTitle, List, ListItem, ListItemButton } from "@mui/material";
+import { IoMdHeart } from "react-icons/io";
+import {
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemButton,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
 
 interface SongProps {
   song: {
@@ -27,28 +37,64 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
   const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likedInitialized, setLikedInitialized] = useState(false);
 
-  // Open menu
+  // Optional: Fetch if this song is already liked (initial)
+  useEffect(() => {
+    const fetchLikedStatus = async () => {
+      try {
+        const { data } = await axiosInstance.get("/api/user/liked-songs");
+        const isLiked = data.some((s: any) => s._id === song._id);
+        setLiked(isLiked);
+      } catch (err) {
+        console.error("Failed to fetch liked songs");
+      }
+    };
+    fetchLikedStatus();
+  }, [song._id]);
+
+  // Handle like/unlike
+  const toggleLike = async () => {
+    try {
+      const url = liked ? "/api/user/unlike" : "/api/user/like";
+      await axiosInstance.post(url, { songId: song._id });
+      setLiked(!liked);
+    } catch (err) {
+      console.error("Failed to toggle like:", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchLikedStatus = async () => {
+      try {
+        const { data } = await axiosInstance.get("/api/user/liked");
+        const isLiked = data.some((s: any) => s._id === song._id);
+        setLiked(isLiked);
+      } catch (err) {
+        console.error("Failed to fetch liked songs");
+      } finally {
+        setLikedInitialized(true);
+      }
+    };
+    fetchLikedStatus();
+  }, [song._id]);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
   };
-  // Close menu
   const handleMenuClose = () => {
     setMenuAnchor(null);
   };
 
-  // Open playlist selection dialog
   const handleOpenDialog = () => {
     setDialogOpen(true);
     handleMenuClose();
   };
-
-  // Close dialog
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
 
-  // Add song to selected playlist
   const handleAddToPlaylist = async (playlistId: string) => {
     await addSongToPlaylist(playlistId, song._id);
     setDialogOpen(false);
@@ -56,51 +102,71 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
 
   return (
     <div className="w-[160px] lg:w-[180px]">
-      {/* Song Thumbnail & Play Button */}
+      {/* Song Thumbnail */}
       <div
-        className="relative w-full h-[160px] lg:h-[180px] inline-block rounded-lg overflow-hidden cursor-pointer m-2"
-        onClick={() => playSong(song)} 
+        className="relative w-full h-[160px] lg:h-[180px] inline-block rounded-lg overflow-hidden cursor-pointer m-2 group"
+        onClick={() => playSong(song)}
       >
-        <img src={song.thumbnail} alt={song.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex justify-center items-center">
-          <button className="text-white rounded-full bg-black p-2 hover:bg-gray-900 cursor-pointer">
+        <img
+          src={song.thumbnail}
+          alt={song.title}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex justify-center items-center transition-all">
+          <button className="text-white bg-black/70 p-2 rounded-full hover:bg-black">
             <PlayArrow fontSize="large" />
           </button>
         </div>
       </div>
 
-      {/* Song Details */}
+      {/* Song Info + Actions */}
       <div className="w-full text-white mt-2 flex justify-between items-center">
-        <div>
-          <a className="font-bold block truncate">{song.title}</a>
-          <p className="text-sm truncate">
-            Artist: <span onClick={()=> navigate(`/artist/${song.artist._id}`)} className="text-gray-300 hover:underline cursor-pointer">{song.artist.firstName + " " + song.artist.lastName}</span>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold truncate">{song.title}</p>
+          <p className="text-sm text-gray-300 truncate">
+            Artist:{" "}
+            <span
+              onClick={() => navigate(`/artist/${song.artist._id}`)}
+              className="hover:underline cursor-pointer"
+            >
+              {song.artist.firstName + " " + song.artist.lastName}
+            </span>
           </p>
         </div>
+          
+          <button onClick={handleMenuOpen}>
+            <BsThreeDotsVertical size={20} />
+          </button>
 
-        {/* Options Menu */}
-        <button onClick={handleMenuOpen} className="text-white">
-          <BsThreeDotsVertical size={20} />
-        </button>
       </div>
 
-      {/* MUI Menu */}
-      <Menu  anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
+      {/* Options Menu */}
+      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
         <MenuItem onClick={handleOpenDialog}>Add to Playlist</MenuItem>
-        <MenuItem>Like Song</MenuItem>
+        <MenuItem onClick={toggleLike} disabled={!likedInitialized}>
+        {!likedInitialized ? "Loading..." : liked ? "Unlike Song" : "Like Song"}
+        </MenuItem>
       </Menu>
 
-      {/* Playlist Selection Dialog */}
+      {/* Playlist Dialog */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle sx={{backgroundColor:"#212121" , color:"white"}}>Select a Playlist</DialogTitle>
-        <List sx={{backgroundColor:"#212121" , color:"white"}}>
-          {playlists.map((playlist) => (
-            <ListItem key={playlist._id}>
-              <ListItemButton onClick={() => handleAddToPlaylist(playlist._id)}>
-                {playlist.name}
-              </ListItemButton>
+        <DialogTitle sx={{ backgroundColor: "#212121", color: "white" }}>
+          Select a Playlist
+        </DialogTitle>
+        <List sx={{ backgroundColor: "#212121", color: "white" }}>
+          {playlists.length === 0 ? (
+            <ListItem>
+              <p className="text-gray-400">No playlists found</p>
             </ListItem>
-          ))}
+          ) : (
+            playlists.map((playlist) => (
+              <ListItem key={playlist._id}>
+                <ListItemButton onClick={() => handleAddToPlaylist(playlist._id)}>
+                  {playlist.name}
+                </ListItemButton>
+              </ListItem>
+            ))
+          )}
         </List>
       </Dialog>
     </div>

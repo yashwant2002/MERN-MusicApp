@@ -1,12 +1,7 @@
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { Logout, CloudUpload, AccountCircle } from "@mui/icons-material";
-import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -58,9 +53,7 @@ export default function MobileSidebar() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [openElement, setOpenElement] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -304,7 +297,10 @@ export default function MobileSidebar() {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => navigate("/")}
+              onClick={() => {
+                navigate("/");
+                setOpen(false);
+              }}
             >
               <ListItemButton
                 sx={[
@@ -359,7 +355,10 @@ export default function MobileSidebar() {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => navigate("/explore")}
+              onClick={() => {
+                navigate("/explore");
+                setOpen(false);
+              }}
             >
               <ListItemButton
                 sx={[
@@ -414,9 +413,14 @@ export default function MobileSidebar() {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() =>
-                user ? navigate("/library") : setDialogOpen(true)
-              }
+              onClick={() => {
+                if (user) {
+                  navigate("/library");
+                } else {
+                  setDialogOpen(true);
+                }
+                setOpen(false);
+              }}
             >
               <ListItemButton
                 sx={[
@@ -481,9 +485,14 @@ export default function MobileSidebar() {
           <List>
             <ListItem disablePadding sx={{ display: open ? "block" : "none" }}>
               <ListItemButton
-                onClick={() =>
-                  user ? setOpenPlaylistForm(true) : setDialogOpen(true)
-                }
+                onClick={() => {
+                  if (user) {
+                    setOpenPlaylistForm(true);
+                  } else {
+                    setDialogOpen(true);
+                  }
+                  setOpen(false);
+                }}
                 sx={{
                   minHeight: 48,
                   backdropFilter: "blur(10px)",
@@ -523,6 +532,14 @@ export default function MobileSidebar() {
           <List>
             <ListItem disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                onClick={() => {
+                 if(user){
+                  navigate("/likedSong");
+                 }else{
+                  setDialogOpen(true);
+                 }
+                  setOpen(false);
+                }}
                 sx={[
                   {
                     minHeight: 48,
@@ -552,7 +569,7 @@ export default function MobileSidebar() {
                     <h1>Liked Songs</h1>
                     <p className="text-gray-300 flex items-center text-[13px]">
                       <PushPinIcon sx={{ color: "gray", fontSize: "20px" }} />
-                      Default Playlist
+                      Auto Playlist
                     </p>
                   </div>
                 </ListItemText>
@@ -567,7 +584,10 @@ export default function MobileSidebar() {
                 sx={{ display: "block" }}
               >
                 <ListItemButton
-                  onClick={() => navigate(`/playlist/${playlist._id}`)}
+                  onClick={() => {
+                    navigate(`/playlist/${playlist._id}`);
+                    setOpen(false);
+                  }}
                   sx={[
                     {
                       minHeight: 48,

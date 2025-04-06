@@ -697,7 +697,7 @@ export default function Sidebar() {
         </List>
         <List>
           <ListItem disablePadding sx={{ display: "block" }}>
-            <ListItemButton
+            <ListItemButton onClick={()=>user?navigate("/likedSong"):setDialogOpen(true)}
               sx={[
                 {
                   minHeight: 48,
@@ -727,7 +727,7 @@ export default function Sidebar() {
                   <h1>Liked Songs</h1>
                   <p className="text-gray-300 flex items-center text-[13px]">
                     <PushPinIcon sx={{ color: "gray", fontSize: "20px" }} />
-                    Default Playlist
+                    Auto Playlist
                   </p>
                 </div>
               </ListItemText>

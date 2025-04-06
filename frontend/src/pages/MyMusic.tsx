@@ -18,7 +18,7 @@ const MyMusic = () => {
         const response = await axiosInstance.get("/api/songs/my-songs", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Fetched Songs:", response.data);
+        // console.log("Fetched Songs:", response.data);
         setSongs(response.data);
       } catch (err) {
         console.error("Error loading songs:", err); 

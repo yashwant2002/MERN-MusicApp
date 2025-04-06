@@ -13,6 +13,7 @@ import AuthDialog from "./components/Auth/AuthDialog";
 import Playlist from "./components/Playlist/Playlist";
 import Artist from "./components/Artist/Artist";
 import MobileSidebar from "./components/Sidebar/MobileSidebar";
+import LikedPlaylist from "./components/Sidebar/LikedPlaylist";
 
 function App() {
   const theme = useTheme();
@@ -54,6 +55,7 @@ const isPlaylistRoute = location.pathname === "/playlist";
             <Route path="/library" element={<MyMusic />} />
             <Route path="/playlist/:id" element={<Playlist/>} />
             <Route path="/artist/:artistId" element={<Artist/>}/>
+            <Route path="/likedSong" element={<LikedPlaylist/>}/>
           </Routes>
         </Box>
       </Box>
