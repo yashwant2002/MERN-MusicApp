@@ -134,7 +134,7 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
   const currentSong = songs[currentSongIndex];
 
   return (
-    <div className="fixed bottom-0 left-0 z-[1300] h-17 w-full shadow-lg bg-[#212121] px-4">
+    <div className="fixed bottom-0 left-0 z-[1000] h-17 w-full shadow-lg bg-[#212121] px-4">
       {/* Progress bar */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gray-500 cursor-pointer">
         <div 

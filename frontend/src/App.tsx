@@ -12,6 +12,7 @@ import Login from "./components/Auth/Login";
 import AuthDialog from "./components/Auth/AuthDialog";
 import Playlist from "./components/Playlist/Playlist";
 import Artist from "./components/Artist/Artist";
+import MobileSidebar from "./components/Sidebar/MobileSidebar";
 
 function App() {
   const theme = useTheme();
@@ -33,7 +34,7 @@ const isPlaylistRoute = location.pathname === "/playlist";
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-black text-white">
       <Box sx={{ display: "flex",overflow:"hidden", zIndex: 1000 }}>
-        <Sidebar />
+        {isMobile?<MobileSidebar/>:<Sidebar />}
         <Box
           component="main"
           sx={{
@@ -43,6 +44,7 @@ const isPlaylistRoute = location.pathname === "/playlist";
             marginTop:isPlaylistRoute? "0" : isMobile ? "4rem" : "4rem",
             marginLeft:isPlaylistRoute? "0" : isMobile ? ".1rem" : "2rem",
             marginRight:isPlaylistRoute? "0" : isMobile ? ".1rem" : "2rem",
+            marginBottom:isPlaylistRoute? "0" : isMobile ? "5rem" : "2rem",
             overflowY: "auto",
           }}
         >
