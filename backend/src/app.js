@@ -10,11 +10,13 @@ dotenv.config({
     path:"./.env"
 })
 
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-}));
+app.use(
+    cors({
+      origin: "https://mern-musicapp-frontend.onrender.com",
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      credentials: true,
+    })
+  );
 
 app.use(express.json());
 
