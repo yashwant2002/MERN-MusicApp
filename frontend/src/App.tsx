@@ -7,7 +7,6 @@ import MyMusic from "./pages/MyMusic";
 import MusicPlayer from "./components/Music/MusicPlayer";
 import MoblieMusicPlayer from "./components/Music/MoblieMusicPlayer";
 import ErrorBoundary from "./utils/ErroBoundry";
-import { useSongs } from "./store/SongContext";
 import Playlist from "./components/Playlist/Playlist";
 import Artist from "./components/Artist/Artist";
 import MobileSidebar from "./components/Sidebar/MobileSidebar";
@@ -18,10 +17,6 @@ function App() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 const isPlaylistRoute = location.pathname === "/playlist";
-// const isArtistRoute = location.pathname === "/artist"
-
-
- // const {songs} = useSongs()
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-black text-white">
