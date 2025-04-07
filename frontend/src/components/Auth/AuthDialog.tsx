@@ -11,7 +11,6 @@ import {
 import { IoMdClose } from "react-icons/io";
 import Login from "./Login";
 import Register from "./Register";
-import Logo from "../../utils/Logo";
 
 interface AuthDialogProps {
   open: boolean;
@@ -52,31 +51,32 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, handleClose }) => {
 
   {/* Tabs for switching between Login & Register */}
   <Tabs
-    value={tab}
-    onChange={(e, newValue) => setTab(newValue)}
-    centered
-    sx={{
-      "& .MuiTabs-flexContainer": { justifyContent: "center" },
-      "& .MuiTab-root": {
-        textTransform: "none",
-        fontSize: "16px",
-        fontWeight: "bold",
-        flexGrow: 1,
-        transition: "all 0.3s ease-in-out",
-        color: "#555", // Subtle color
-        "&:hover": { color: "#1976d2" },
-      },
-      "& .Mui-selected": {
-        color: "#1976d2 !important",
-      },
-      "& .MuiTabs-indicator": {
-        backgroundColor: "#1976d2",
-      },
-    }}
-  >
-    <Tab label="Login" />
-    <Tab label="Register" />
-  </Tabs>
+  value={tab}
+  onChange={(_, newValue) => setTab(newValue)}
+  centered
+  sx={{
+    "& .MuiTabs-flexContainer": { justifyContent: "center" },
+    "& .MuiTab-root": {
+      textTransform: "none",
+      fontSize: "16px",
+      fontWeight: "bold",
+      flexGrow: 1,
+      transition: "all 0.3s ease-in-out",
+      color: "#555",
+      "&:hover": { color: "#1976d2" },
+    },
+    "& .Mui-selected": {
+      color: "#1976d2 !important",
+    },
+    "& .MuiTabs-indicator": {
+      backgroundColor: "#1976d2",
+    },
+  }}
+>
+  <Tab label="Login" />
+  <Tab label="Register" />
+</Tabs>
+
 
   {/* Dialog Content */}
   <DialogContent sx={{ position: "relative", padding: "20px" }}>

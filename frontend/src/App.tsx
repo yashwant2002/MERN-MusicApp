@@ -8,8 +8,6 @@ import MusicPlayer from "./components/Music/MusicPlayer";
 import MoblieMusicPlayer from "./components/Music/MoblieMusicPlayer";
 import ErrorBoundary from "./utils/ErroBoundry";
 import { useSongs } from "./store/SongContext";
-import Login from "./components/Auth/Login";
-import AuthDialog from "./components/Auth/AuthDialog";
 import Playlist from "./components/Playlist/Playlist";
 import Artist from "./components/Artist/Artist";
 import MobileSidebar from "./components/Sidebar/MobileSidebar";
@@ -22,13 +20,6 @@ function App() {
 const isPlaylistRoute = location.pathname === "/playlist";
 // const isArtistRoute = location.pathname === "/artist"
 
-  interface Song {
-    title: string;
-    artist: string;
-    thumbnail: string;
-    track: string;
-    likes : string;
-  }
 
   const {songs} = useSongs()
 

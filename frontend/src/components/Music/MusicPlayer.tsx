@@ -7,19 +7,6 @@ import { FiRepeat } from "react-icons/fi";
 import { ImShuffle } from "react-icons/im";
 import { useSongs } from "../../store/SongContext";
 
-interface Song {
-  _id: string;
-  title: string;
-  artist: {  
-    _id: string;
-    firstName: string;
-    lastName: string;
-  };
-  thumbnail: string;
-  track: string;
-  likes: number;
-}
-
 const MusicPlayer: React.FC = () => {
   const { songs, currentSong, isPlaying, playSong, togglePlay } = useSongs();
   const [progress, setProgress] = useState(0);
@@ -164,7 +151,7 @@ const MusicPlayer: React.FC = () => {
         <div>
           <h1 className="text-sm font-semibold">{currentSong.title}</h1>
           <h2 className="text-xs text-gray-400">
-            {currentSong.artist.firstName} {currentSong.artist.lastName} | <span>{currentSong.likes} likes</span>
+            {currentSong.artist.firstName} {currentSong.artist.lastName} | <span> 10 likes</span>
           </h2>
         </div>
         <button onClick={() => setLiked(!liked)}>

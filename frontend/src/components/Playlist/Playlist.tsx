@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // To get playlist ID from URL
 import { Box } from "@mui/material";
 import { IoMdPlayCircle } from "react-icons/io";
@@ -13,15 +13,15 @@ const Playlist = () => {
   const navigate = useNavigate();
   const { fetchPlaylistById, deletePlaylist } = usePlaylist(); 
   const [playlist, setPlaylist] = useState<any>(null); 
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   
   useEffect(() => {
     const getPlaylist = async () => {
       if (!id) return;
-      setLoading(true);
+      // setLoading(true);
       const data = await fetchPlaylistById(id);
       setPlaylist(data);
-      setLoading(false);
+      // setLoading(false);
     };
     getPlaylist();
   }, [id, fetchPlaylistById]);

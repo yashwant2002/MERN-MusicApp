@@ -60,12 +60,12 @@ const UploadMusicDialog = ({ open, onClose }: { open: boolean; onClose: () => vo
     formData.append("thumbnail", thumbnail);
   
     try {
-      const response = await axiosInstance.post("/api/songs", formData, {
+      await axiosInstance.post("/api/songs", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Song uploaded successfully!");
       onClose();
-    } catch (error) {
+    } catch (err) {
       toast.error("Upload failed. Please try again.");
     } finally {
       setLoading(false);

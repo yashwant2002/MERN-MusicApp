@@ -1,4 +1,3 @@
-import React from 'react';
 import ArtistSongCard from './ArtistSongCard';
 
 const Artist = () => {

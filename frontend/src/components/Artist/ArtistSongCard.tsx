@@ -1,27 +1,10 @@
 import React, { useState } from "react";
-import { useSongs } from "../../store/SongContext";
 import { IoPlay } from "react-icons/io5";
 
-interface Song {
-  _id: string;
-  title: string;
-  artist: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-  };
-  thumbnail: string;
-  track: string;
-  duration?: number;
-}
 
-interface ArtistMusicCardProps {
-  song: Song;
-}
-
-const ArtistSongCard: React.FC<ArtistMusicCardProps> = ({ song }) => {
+const ArtistSongCard: React.FC = () => {
   const [hover, setHover] = useState(false);
-  const { playSong } = useSongs();
+  // const { playSong } = useSongs();
 
   return (
     <div
@@ -41,13 +24,13 @@ const ArtistSongCard: React.FC<ArtistMusicCardProps> = ({ song }) => {
             hover ? "opacity-100 cursor-pointer" : "opacity-0"
           }`}
         >
-          <button onClick={() => playSong(song)}>
+          <button>
             <IoPlay />
           </button>
         </div>       
       </div>
       <div>
-          <h1 onClick={() => playSong(song)} className="text-sm cursor-pointer font-semibold">Song name</h1>
+          <h1 className="text-sm cursor-pointer font-semibold">Song name</h1>
           <h2 className="text-xs text-gray-400">
             Artist Name
           </h2>

@@ -7,7 +7,6 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { IoMdClose } from "react-icons/io";
 import axiosInstance from "../../utils/axiosInstance";
 import { toast } from "react-toastify";
 
@@ -22,16 +21,16 @@ const CreatePlaylist: React.FC<CreatePlaylistProps> = ({
 }) => {
   const [playlistName, setPlaylistName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const DEFAULT = "https://yt3.googleusercontent.com/wotexgHbeJJzumPdT8hUvTKElOEC24FPKO0sUMuQShht4B85voTd0o7KnR9o83FGXWwraCpbCZxq=s1200";
+  // const [error, setError] = useState("");
+  // const DEFAULT = "https://yt3.googleusercontent.com/wotexgHbeJJzumPdT8hUvTKElOEC24FPKO0sUMuQShht4B85voTd0o7KnR9o83FGXWwraCpbCZxq=s1200";
 
   const handleCreatePlaylist = async () => {
     if (!playlistName.trim()) {
-      setError("Playlist name is required");
+      // setError("Playlist name is required");
       return;
     }
     setLoading(true);
-    setError("");
+    // setError("");
     try {
       const token = localStorage.getItem("token");
     //   console.log("Token from Local Storage:", localStorage.getItem("token"));

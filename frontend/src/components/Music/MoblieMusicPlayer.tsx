@@ -17,7 +17,7 @@ interface Song {
   };
   thumbnail: string;
   track: string;
-  likes: number;
+  // likes: number;
 }
 
 interface MobileMusicPlayerProps {
