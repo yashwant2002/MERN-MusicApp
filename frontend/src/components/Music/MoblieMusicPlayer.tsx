@@ -6,65 +6,50 @@ import { MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { ImShuffle } from "react-icons/im";
 import { FiRepeat } from "react-icons/fi";
+import { useSongs } from "../../store/SongContext";
 
-interface Song {
-  _id: string;
-  title: string;
-  artist: {  
-    _id: string;
-    firstName: string;
-    lastName: string;
-  };
-  thumbnail: string;
-  track: string;
-  // likes: number;
-}
-
-interface MobileMusicPlayerProps {
-  songs: Song[];
-}
-
-const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => {
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+const MobileMusicPlayer: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
   const [isRepeating, setIsRepeating] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const { songs, currentSong, isPlaying, playSong, togglePlay } = useSongs();
+
+  
   // Audio management
   useEffect(() => {
-    if (!songs.length || !audioRef.current) return;
-
-    const currentSong = songs[currentSongIndex];
-    if (!currentSong) return;
-
-    const handleAudio = async () => {
-      audioRef.current!.src = currentSong.track;
-      audioRef.current!.load();
-      
+    if (!currentSong || !audioRef.current) return;
+  
+    const audio = audioRef.current;
+  
+    if (audio.src !== currentSong.track) {
+      audio.pause();
+      audio.src = currentSong.track;
+      audio.load();
+    }
+  
+    const handlePlayback = async () => {
       try {
         if (isPlaying) {
-          await audioRef.current!.play();
+          await audio.play();
+        } else {
+          audio.pause();
         }
-      } catch (error) {
-        console.error("Audio error:", error);
-        setIsPlaying(false);
+        
+      } catch (err) {
+        console.error("Audio error:", err);
       }
     };
-
-    handleAudio();
-
+  
+    handlePlayback();
+  
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeAttribute('src');
-      }
+      audio.pause();
     };
-  }, [currentSongIndex, songs, isPlaying]);
-
-  // Progress updates
+  }, [currentSong, isPlaying]);
+  
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -78,34 +63,44 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
   }, []);
 
   // Song navigation
-  const navigateSong = (direction: 'next' | 'prev') => {
-    setCurrentSongIndex(prev => {
-      if (isShuffling) {
-        let newIndex;
-        do {
-          newIndex = Math.floor(Math.random() * songs.length);
-        } while (newIndex === prev && songs.length > 1);
-        return newIndex;
-      }
-      
-      return direction === 'next' 
-        ? (prev + 1) % songs.length 
-        : (prev - 1 + songs.length) % songs.length;
-    });
-    setIsPlaying(true);
+  const handleNext = () => {
+    if (!songs.length || !currentSong) return;
+  
+    const currentIndex = songs.findIndex(song => song._id === currentSong._id);
+    let nextIndex = currentIndex;
+  
+    if (isShuffling) {
+      do {
+        nextIndex = Math.floor(Math.random() * songs.length);
+      } while (nextIndex === currentIndex && songs.length > 1);
+    } else {
+      nextIndex = (currentIndex + 1) % songs.length;
+    }
+  
+    playSong(songs[nextIndex]);
   };
-
+  
+  const handlePrev = () => {
+    if (!songs.length || !currentSong) return;
+  
+    const currentIndex = songs.findIndex(song => song._id === currentSong._id);
+    let prevIndex = currentIndex;
+  
+    if (isShuffling) {
+      do {
+        prevIndex = Math.floor(Math.random() * songs.length);
+      } while (prevIndex === currentIndex && songs.length > 1);
+    } else {
+      prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+    }
+  
+    playSong(songs[prevIndex]);
+  };
+  
   // Playback controls
   const togglePlayPause = () => {
-    if (!audioRef.current) return;
-    
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(() => setIsPlaying(false));
-    }
-    setIsPlaying(!isPlaying);
-  };
+    togglePlay();
+  };  
 
   // Time formatting
   const formatTime = (seconds: number) => {
@@ -131,7 +126,8 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
     );
   }
 
-  const currentSong = songs[currentSongIndex];
+  if (!currentSong) return null;
+
 
   return (
     <div className="fixed bottom-0 left-0 z-[1000] h-17 w-full shadow-lg bg-[#212121] px-4">
@@ -169,7 +165,7 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
           <button onClick={togglePlayPause}>
             {isPlaying ? <IoMdPause size={30} color="white" /> : <IoMdPlay size={30} color="white" />}
           </button>
-          <button onClick={() => navigateSong('next')}>
+          <button onClick={handleNext}>
             <MdSkipNext size={30} color="white" />
           </button>
         </div>
@@ -265,7 +261,7 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
                 <FiRepeat size={25} />
               </button>
 
-              <button onClick={() => navigateSong('prev')}>
+              <button onClick={handlePrev}>
                 <MdSkipPrevious size={40} color="white" />
               </button>
 
@@ -280,7 +276,7 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
                 )}
               </button>
 
-              <button onClick={() => navigateSong('next')}>
+              <button onClick={handleNext}>
                 <MdSkipNext size={40} color="white" />
               </button>
 
@@ -296,7 +292,11 @@ const MobileMusicPlayer: React.FC<MobileMusicPlayerProps> = ({ songs = [] }) => 
       </SwipeableDrawer>
 
       {/* Hidden audio element */}
-      <audio ref={audioRef} onEnded={() => navigateSong('next')} />
+      <audio
+  ref={audioRef}
+  onEnded={handleNext}
+/>
+
     </div>
   );
 };

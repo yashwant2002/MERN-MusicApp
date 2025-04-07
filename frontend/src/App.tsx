@@ -53,7 +53,7 @@ const isPlaylistRoute = location.pathname === "/playlist";
       <ErrorBoundary>
 
       {
-        isMobile ? <MoblieMusicPlayer songs={songs}/> : <MusicPlayer />
+        isMobile ? <MoblieMusicPlayer /> : <MusicPlayer />
       }
       </ErrorBoundary>
     </div>

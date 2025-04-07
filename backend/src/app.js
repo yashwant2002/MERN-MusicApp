@@ -12,6 +12,7 @@ dotenv.config({
 
 app.use(
     cors({
+      // origin : "http://localhost:5173",
       origin: "https://mern-musicapp-frontend.onrender.com",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
