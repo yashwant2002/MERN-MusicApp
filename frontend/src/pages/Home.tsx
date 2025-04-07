@@ -9,10 +9,10 @@ const Home = () => {
 
   return (
     <div>
-      <HomeCardRow title="New Releases" songs={songs.slice(10, 20)} />
-      <HomeCardRow title="Top Hits" songs={songs.slice(20, 30)} />
-      <HomeCardRow title="Trending Now" songs={songs.slice(30, 40)} />
-      <HomeCardRow title="Recommended For You" songs={songs.slice(0, 10)} />
+      <HomeCardRow title="New Releases" songs={songs.slice(15, 30)} />
+      <HomeCardRow title="Top Hits" songs={songs.slice(30, 45)} />
+      <HomeCardRow title="Trending Now" songs={songs.slice(45, 60)} />
+      <HomeCardRow title="Recommended For You" songs={songs.slice(0, 15)} />
     </div>
   );
 };
