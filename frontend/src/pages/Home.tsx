@@ -1,4 +1,3 @@
-import React from "react";
 import HomeCardRow from "../components/SongCard/HomeCardRow";
 import { useSongs } from "../store/SongContext";
 

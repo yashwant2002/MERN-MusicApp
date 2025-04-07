@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSongs } from "../../store/SongContext";
 import { IoPlay } from "react-icons/io5";
-import { CiHeart } from "react-icons/ci";
 import axiosInstance from "../../utils/axiosInstance";
 import { IoMdHeart } from "react-icons/io";
 
@@ -77,7 +76,7 @@ const LikedSongList: React.FC<ArtistMusicCardProps> = ({ song, onDislike }) => {
         <button className="cursor-pointer" onClick={handleDislike}>
           <IoMdHeart size={25} className="text-red-500" />
         </button>
-        <h1>{formatDuration(song.duration)}</h1>
+        <h1>{formatDuration(song.duration ?? 0)}</h1>
       </div>
     </div>
   );

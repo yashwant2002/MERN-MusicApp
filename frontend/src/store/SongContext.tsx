@@ -5,10 +5,14 @@ import { AxiosError } from "axios"; // Import AxiosError for better type checkin
 interface Song {
   _id: string;
   title: string;
-  artist: string;
+  artist: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
   thumbnail: string;
   track: string;
-  likes: number;
+  // likes: number;
 }
 
 interface SongContextType {

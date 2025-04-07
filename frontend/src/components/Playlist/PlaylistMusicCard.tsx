@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState} from "react";
 import { CiHeart } from "react-icons/ci";
 import { IoPlay } from "react-icons/io5";
 import { MdCheckBoxOutlineBlank } from "react-icons/md";
@@ -95,7 +95,7 @@ const PlaylistMusicCard: React.FC<PlaylistMusicCardProps> = ({
             </button>
           </div>
         ) : (
-          <p>{formatDuration(song.duration)}</p>
+          <p>{formatDuration(song.duration ?? 0)}</p>
         )}
       </div>
     </div>

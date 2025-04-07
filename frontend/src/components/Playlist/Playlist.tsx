@@ -32,8 +32,8 @@ const Playlist = () => {
         await deletePlaylist(playlist._id);
         navigate("/")
         toast.success("Playlist deleted successfully!");
-      } catch (error) {
-        toast.error("Failed to delete playlist:", error);
+      } catch (err) {
+        toast.error("Failed to delete playlist:");
       }
     }
   };

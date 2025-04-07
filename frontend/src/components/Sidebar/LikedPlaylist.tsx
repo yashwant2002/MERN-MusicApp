@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import LikedSongList from './LikedSongList'
 import axiosInstance from '../../utils/axiosInstance'
 
@@ -11,7 +11,7 @@ const LikedPlaylist = () => {
                 const response = await axiosInstance.get("/api/user/liked")
                 setLikedSongs(response.data);
             } catch (error) {
-                console.error("Error fetching liked songs:", err);
+                console.error("Error fetching liked songs:", error);
             }
         }
 

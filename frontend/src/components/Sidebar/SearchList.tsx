@@ -21,7 +21,7 @@ const SearchList: React.FC<ArtistMusicCardProps>  = ({song}) => {
     const [hover, setHover] = useState(false);
     const { playSong } = useSongs();
     
-    const formatDuration = (seconds: number): string => {
+    const formatDuration = (seconds : number): string => {
       if (isNaN(seconds)) return "0:00";
       const minutes = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
@@ -58,7 +58,7 @@ const SearchList: React.FC<ArtistMusicCardProps>  = ({song}) => {
             </div>
           </div>
           <div>
-            <h1 className='text-white'>{formatDuration(song.duration)}</h1>
+            <h1 className='text-white'>{formatDuration(song.duration ?? 0)}</h1>
           </div>
         </div>
   )

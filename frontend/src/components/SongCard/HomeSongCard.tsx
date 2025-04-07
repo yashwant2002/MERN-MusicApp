@@ -3,8 +3,6 @@ import { useSongs } from "../../store/SongContext";
 import { usePlaylist } from "../../store/PlaylistContext";
 import { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { CiHeart } from "react-icons/ci";
-import { IoMdHeart } from "react-icons/io";
 import {
   Menu,
   MenuItem,
@@ -31,6 +29,7 @@ interface SongProps {
   };
 }
 
+
 const HomeSongCard: React.FC<SongProps> = ({ song }) => {
   const { playSong } = useSongs();
   const { playlists, addSongToPlaylist } = usePlaylist();
@@ -48,7 +47,7 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
         const isLiked = data.some((s: any) => s._id === song._id);
         setLiked(isLiked);
       } catch (err) {
-        console.error("Failed to fetch liked songs");
+        console.error("Failed to fetch liked songs",err);
       }
     };
     fetchLikedStatus();
@@ -72,7 +71,7 @@ const HomeSongCard: React.FC<SongProps> = ({ song }) => {
         const isLiked = data.some((s: any) => s._id === song._id);
         setLiked(isLiked);
       } catch (err) {
-        console.error("Failed to fetch liked songs");
+        console.error("Failed to fetch liked songs",err);
       } finally {
         setLikedInitialized(true);
       }

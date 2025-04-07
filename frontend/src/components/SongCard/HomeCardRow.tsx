@@ -7,8 +7,19 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface HomeCardRowProps {
   title: string;
-  songs: { title: string; artist: string; thumbnail: string; track: string }[];
+  songs: {
+    _id : string;
+    title: string;
+    artist: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+    };
+    thumbnail: string;
+    track: string;
+  }[];
 }
+
 
 const HomeCardRow: React.FC<HomeCardRowProps> = ({ title, songs }) => {
   const carouselRef = useRef<AliceCarousel | null>(null);

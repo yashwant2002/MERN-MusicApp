@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-import { IoPlay } from "react-icons/io5";
 import { usePlaylist } from "../store/PlaylistContext";
 import {
   Dialog,
@@ -19,6 +18,7 @@ import { PlayArrow } from "@mui/icons-material";
 interface Song {
   _id: string;
   title: string;
+  track : string;
   artist: {
     _id: string;
     firstName: string;
@@ -26,6 +26,7 @@ interface Song {
   };
   thumbnail: string;
   genre: string;
+  likes : number;
   duration: number;
 }
 
@@ -97,12 +98,6 @@ const Explore: React.FC = () => {
     setDialogOpen(false);
   };
 
-  const formatDuration = (duration: number) => {
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
   if (loading) {
     return (
       <div className="text-center text-white text-2xl mt-10">Loading...</div>
@@ -139,7 +134,7 @@ const Explore: React.FC = () => {
       </div>
 
       <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-3">
-        {Object.entries(filteredSongs).flatMap(([genre, songs]) =>
+        {Object.entries(filteredSongs).flatMap(([, songs]) =>
           songs.map((song) => (
             <div key={song._id} className="w-[160px] lg:w-[180px]">
               <div

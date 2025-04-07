@@ -6,7 +6,7 @@ interface Playlist {
   _id: string;
   name: string;
   thumbnail: string;
-  owner: { _id: string; name: string };
+  owner: { _id: string; firstName: string;  lastName: string; };
   songs: any[];
 }
 
@@ -70,7 +70,7 @@ export const PlaylistProvider: React.FC<{ children: ReactNode }> = ({ children }
       const response = await axiosInstance.post("/api/playlist/create", { name });
       setPlaylists([...playlists, response.data]);
       setError("Failed to create playlist.");
-      console.error(err);
+      // console.error(err);
     } finally {
       setLoading(false);
     }

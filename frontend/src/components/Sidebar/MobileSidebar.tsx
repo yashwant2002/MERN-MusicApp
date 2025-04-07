@@ -37,6 +37,19 @@ import axiosInstance from "../../utils/axiosInstance";
 import { usePlaylist } from "../../store/PlaylistContext";
 import SearchList from "./SearchList";
 
+interface Song {
+  _id: string;
+  title: string;
+  artist: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  thumbnail: string;
+  track: string;
+  duration?: number;
+}
+
 export default function MobileSidebar() {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -52,7 +65,7 @@ export default function MobileSidebar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Song[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,11 +110,6 @@ export default function MobileSidebar() {
     };
   }, []);
 
-  const handleDrawerToggle = () => {
-    setOpen((prev) => !prev);
-    console.log("Open state toggled:", !open);
-  };
-
   const handleSearch = async () => {
     if (!query.trim()) return;
 
@@ -110,7 +118,7 @@ export default function MobileSidebar() {
       // console.log(response.data);
 
       setResults(response.data);
-      setOpenElement(true);
+      // setOpenElement(true);
     } catch (error) {
       console.error("Failed to search songs:", error);
     }

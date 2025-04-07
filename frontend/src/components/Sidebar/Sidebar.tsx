@@ -122,6 +122,19 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
+interface Song {
+  _id: string;
+  title: string;
+  artist: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  thumbnail: string;
+  track: string;
+  duration?: number;
+}
+
 export default function Sidebar() {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -137,8 +150,8 @@ export default function Sidebar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [openElement, setOpenElement] = useState(false);
+  const [results, setResults] = useState<Song[]>([]);
+  // const [openElement, setOpenElement] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -224,7 +237,7 @@ export default function Sidebar() {
       console.log(response.data);
 
       setResults(response.data);
-      setOpenElement(true);
+      // setOpenElement(true);
     } catch (error) {
       console.error("Failed to search songs:", error);
     }
@@ -293,7 +306,7 @@ export default function Sidebar() {
                     className="bg-transparent outline-none w-full h-9 text-white placeholder-white/70"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => setOpenElement(true)}
+                    // onFocus={() => setOpenElement(true)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   />
                 </div>
