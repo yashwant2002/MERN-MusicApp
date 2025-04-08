@@ -112,7 +112,7 @@ const Explore: React.FC = () => {
       : groupedSongs;
 
   return (
-    <div className="min-h-screen text-white p-8">
+    <div className="min-h-screen text-white">
       <h1 className="text-3xl lg:text-4xl font-bold mb-8">Explore Music</h1>
 
       <div className="w-full overflow-x-auto">
@@ -133,7 +133,7 @@ const Explore: React.FC = () => {
         </div>
       </div>
 
-      <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-3">
+      <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-3">
         {Object.entries(filteredSongs).flatMap(([, songs]) =>
           songs.map((song) => (
             <div key={song._id} className="w-[160px] lg:w-[180px]">
